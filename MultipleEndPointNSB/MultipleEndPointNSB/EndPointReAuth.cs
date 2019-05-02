@@ -23,7 +23,10 @@ namespace MultipleEndPointNSB
             var endpointConfiguration = new EndpointConfiguration(_queue);
 
             endpointConfiguration.UsePersistence<NHibernatePersistence>();
-            endpointConfiguration.UseTransport<MsmqTransport>();
+
+            var routing = endpointConfiguration.UseTransport<MsmqTransport>().Routing();
+            routing.RegisterPublisher(typeof(ReAuthorizationEvent), "pfs.services");
+
             endpointConfiguration.UseSerialization<JsonSerializer>();
             endpointConfiguration.SendFailedMessagesTo(_errorQueue);
             endpointConfiguration.LimitMessageProcessingConcurrencyTo(_maxDop);

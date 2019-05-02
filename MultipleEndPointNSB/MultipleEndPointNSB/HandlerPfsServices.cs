@@ -9,10 +9,13 @@ namespace MultipleEndPointNSB
 {
     class HandlerPfsServices : IHandleMessages<ReloadServicesCommand>
     {
-        public Task Handle(ReloadServicesCommand message, IMessageHandlerContext context)
+        public async Task Handle(ReloadServicesCommand message, IMessageHandlerContext context)
         {
             Console.WriteLine($"ReloadServiceCommandRecieved {string.Concat(message.ServiceIds.Select(id => id.ToString() + " "))}");
-            return Task.FromResult(true);
+            foreach (var serviceId in message.ServiceIds)
+            {
+                await context.Publish(new ReAuthorizationEvent { ServiceId = serviceId, ContractId = serviceId * 10, SubscriberId = serviceId * 100 });
+            }
         }
     }
 }
